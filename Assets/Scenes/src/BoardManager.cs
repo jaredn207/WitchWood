@@ -1,0 +1,156 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BoardManager : MonoBehaviour
+{
+    //array of characters that  are moveable
+    public Character[,] Characters { set; get; }
+    private Character selectedCharacter;
+
+    //Tile size, middle of the first tile is (0.5,0.5)
+    private const float TILE_SIZE = 1.0f;
+    private const float TILE_OFFSET = 0.5f;
+
+    //position of the mouse. Started at -1 and set to -1 if there is no real tile selection
+    private int selectionX = -1;
+    private int selectionY = -1;
+
+    //Lists of playable characters
+    public List<GameObject> heroes;
+    private List<GameObject> activeCharacter;
+
+    //position of the character,(x,y,z). X flips the character up and down, y rotates the character,
+    //z flips the character up and down in the other direction
+    private Quaternion orientation = Quaternion.Euler(0, 0, 0);
+
+    //Is it your turn?
+    public bool isAllyTurn = true;
+
+    //Instantiate the activeCharacters list, set the Characters array to the entire board so that something can be selected at any position.
+    //spawn the knight at (0,0) on the board
+    private void Start()
+    {
+        activeCharacter = new List<GameObject>();
+        Characters = new Character[8,8];
+        spawnCharacter(0, 0, 0);
+    }
+
+    //Draws the board with the debugger, allows the player to move and select characters;
+    private void Update()
+    {
+        UpdateSelection();
+        drawBoard();
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            if(selectionX >= 0 && selectionY >= 0)
+            {
+                if(selectedCharacter == null)
+                {
+                    selectCharacter(selectionX, selectionY);
+                }
+                else
+                {
+                    moveCharacter(selectionX, selectionY);
+                }
+            }
+        }
+    }
+
+    //select a character, x is the x-coordinate, y is the y-coordinate you clicked
+    private void selectCharacter(int x, int y)
+    {
+        //if there is no character on a tile, return
+        if (Characters[x, y] == null)
+            return;
+        
+        //if there is no character on the tile and it's not your turn, return
+        if (Characters[x, y].isAlly != isAllyTurn)
+            return;
+
+        //set the selected character to the character you clicked
+        selectedCharacter = Characters[x, y];
+    }
+
+    //move a character, x is the x-coordinate, y is the y-coordinate you clicked
+    private void moveCharacter(int x, int y)
+    {
+        //unfinished, if the position you selected is a valid move, move the character
+        if(selectedCharacter.possibleMove(x,y))
+        {
+            Characters[selectedCharacter.currentX, selectedCharacter.currentY] = null;
+            selectedCharacter.transform.position = getTileCenter(x, y);
+            Characters[x, y] = selectedCharacter;
+        }
+
+        //deselect the character
+        selectedCharacter = null;
+    }
+
+    //Does not interact with character selection. this method shows which tile the mouse is over by drawing an X
+    private void UpdateSelection()
+    {
+        if (!Camera.main)
+            return;
+
+        RaycastHit hit;
+        if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 25.0f, LayerMask.GetMask("BoardPlane")))
+        {
+            selectionX = (int)hit.point.x;
+            selectionY = (int)hit.point.z;
+        }
+        else
+        {
+            selectionX = -1;
+            selectionY = -1;
+        }
+    }
+
+    //Spawns a character from the board's character array
+    //index is the index in a character array, x is the x-coordinate, y is the y-coordinate on the board
+    private void spawnCharacter(int index, int x, int y)
+    {
+        GameObject go = Instantiate(heroes[index], getTileCenter(x,y), orientation) as GameObject;
+        go.transform.SetParent(transform);
+        Characters[x, y] = go.GetComponent<Character>();
+        Characters[x, y].setPosition(x, y);
+        activeCharacter.Add(go);
+    }
+
+    //quickly gets the center of a tile. x and z are the coordinates on the board where you want to find the center
+    private Vector3 getTileCenter(int x, int z)
+    {
+        Vector3 origin = Vector3.zero;
+        origin.x += (TILE_SIZE * x) + TILE_OFFSET;
+        origin.z += (TILE_SIZE * z) + TILE_OFFSET;
+        return origin;
+    }
+
+    //draws a board with the debugger
+    private void drawBoard()
+    {
+        Vector3 widthLine = Vector3.right * 8;
+        Vector3 heightLine = Vector3.forward * 8;
+
+        for(int i = 0; i<=8; i++)
+        {
+            Vector3 start = Vector3.forward * i;
+            Debug.DrawLine(start, start + widthLine);
+            for(int j = 0; j<=8; j++)
+            {
+                start = Vector3.right * j;
+                Debug.DrawLine(start, start + heightLine);
+            }
+        }
+
+        if(selectionX >= 0 && selectionY >= 0)
+        {
+            Debug.DrawLine(Vector3.forward * selectionY + Vector3.right * selectionX, 
+                           Vector3.forward * (selectionY + 1) + Vector3.right * (selectionX + 1));
+
+            Debug.DrawLine(Vector3.forward * (selectionY+1) + Vector3.right * selectionX,
+                           Vector3.forward * selectionY + Vector3.right * (selectionX + 1));
+        }
+    }
+}
