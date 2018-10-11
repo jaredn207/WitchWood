@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
+    public static BoardManager Instance { set; get; }
+    private bool[,] allowedMoves { set; get; }
+
     //array of characters that  are moveable
     public Character[,] Characters { set; get; }
     private Character selectedCharacter;
@@ -27,12 +30,14 @@ public class BoardManager : MonoBehaviour
     //Is it your turn?
     public bool isAllyTurn = true;
 
+    public const int boardSize = 8;
+
     //Instantiate the activeCharacters list, set the Characters array to the entire board so that something can be selected at any position.
     //spawn the knight at (0,0) on the board
     private void Start()
     {
         activeCharacter = new List<GameObject>();
-        Characters = new Character[8,8];
+        Characters = new Character[boardSize,boardSize];
         spawnCharacter(0, 0, 0);
     }
 
@@ -41,6 +46,10 @@ public class BoardManager : MonoBehaviour
     {
         UpdateSelection();
         drawBoard();
+
+        //adjust the plane that detects tile clicking to the right size
+        GameObject.Find("BoardPlane").transform.localScale = new Vector3((float)boardSize/10f, (float)boardSize/10f, (float)boardSize/10f);
+        GameObject.Find("BoardPlane").transform.position = new Vector3((float)boardSize / 2f, 0f, (float)boardSize / 2f);
 
         if(Input.GetMouseButtonDown(0))
         {
@@ -69,20 +78,27 @@ public class BoardManager : MonoBehaviour
         if (Characters[x, y].isAlly != isAllyTurn)
             return;
 
+        allowedMoves = Characters[x, y].possibleMove();
+
         //set the selected character to the character you clicked
         selectedCharacter = Characters[x, y];
+
+        BoardHighlighter.Instance.highlightAllowedMoves(allowedMoves);
     }
 
     //move a character, x is the x-coordinate, y is the y-coordinate you clicked
     private void moveCharacter(int x, int y)
     {
         //unfinished, if the position you selected is a valid move, move the character
-        if(selectedCharacter.possibleMove(x,y))
+        if(allowedMoves[x,y] == true)
         {
             Characters[selectedCharacter.currentX, selectedCharacter.currentY] = null;
             selectedCharacter.transform.position = getTileCenter(x, y);
+            selectedCharacter.setPosition(x, y);
             Characters[x, y] = selectedCharacter;
         }
+
+        BoardHighlighter.Instance.hideHighlights();
 
         //deselect the character
         selectedCharacter = null;
@@ -130,14 +146,14 @@ public class BoardManager : MonoBehaviour
     //draws a board with the debugger
     private void drawBoard()
     {
-        Vector3 widthLine = Vector3.right * 8;
-        Vector3 heightLine = Vector3.forward * 8;
+        Vector3 widthLine = Vector3.right * boardSize;
+        Vector3 heightLine = Vector3.forward * boardSize;
 
-        for(int i = 0; i<=8; i++)
+        for(int i = 0; i<= boardSize; i++)
         {
             Vector3 start = Vector3.forward * i;
             Debug.DrawLine(start, start + widthLine);
-            for(int j = 0; j<=8; j++)
+            for(int j = 0; j<= boardSize; j++)
             {
                 start = Vector3.right * j;
                 Debug.DrawLine(start, start + heightLine);

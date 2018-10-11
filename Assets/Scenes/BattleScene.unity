@@ -265,6 +265,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1381791551}
   - component: {fileID: 1381791552}
+  - component: {fileID: 1381791553}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -310,6 +311,20 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  isAllyTurn: 1
+--- !u!114 &1381791553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1381791550}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e57d6a36878dfc45a5b4d7e96426e6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  highlightPrefab: {fileID: 1659211259015504, guid: 76635ba33c1f8d84483cb736bab886cc,
+    type: 2}
 --- !u!1 &1763437206
 GameObject:
   m_ObjectHideFlags: 0

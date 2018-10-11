@@ -8,10 +8,7 @@ public abstract class Character : MonoBehaviour
     public int currentY { set; get; }
     public bool isAlly;
 
-    public int healthPoints;
-    public int defence;
     public int moveDistance;
-    public bool wasMoved;
 
     public void setPosition(int x, int y)
     {
@@ -19,8 +16,8 @@ public abstract class Character : MonoBehaviour
         currentY = y;
     }
 
-    public virtual bool possibleMove(int x, int y)
+    public virtual bool[,] possibleMove()
     {
-        return true;
+        return new bool[BoardManager.boardSize, BoardManager.boardSize];
     }
 }
