@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class BoardManager : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class BoardManager : MonoBehaviour
     private bool[,] allowedMoves { set; get; }
 
     //array of characters that  are moveable
-    public Character[,] Characters { set; get; }
+    public static Character[,] Characters { set; get; }
     private Character selectedCharacter;
 
     //Tile size, middle of the first tile is (0.5,0.5)
@@ -20,7 +21,7 @@ public class BoardManager : MonoBehaviour
     private int selectionY = -1;
 
     //Lists of playable characters
-    public List<GameObject> heroes;
+    public List<GameObject> entities;
     private List<GameObject> activeCharacter;
 
     //position of the character,(x,y,z). X flips the character up and down, y rotates the character,
@@ -30,6 +31,7 @@ public class BoardManager : MonoBehaviour
     //Is it your turn?
     public bool isAllyTurn = true;
 
+    //Board size, x * x. Only change this to modify the board size.
     public const int boardSize = 8;
 
     //Instantiate the activeCharacters list, set the Characters array to the entire board so that something can be selected at any position.
@@ -38,7 +40,8 @@ public class BoardManager : MonoBehaviour
     {
         activeCharacter = new List<GameObject>();
         Characters = new Character[boardSize,boardSize];
-        spawnCharacter(0, 0, 0);
+        spawnCharacter(0, 0, 0);//knight
+        spawnCharacter(1, 1, 1);//demon
     }
 
     //Draws the board with the debugger, allows the player to move and select characters;
@@ -89,8 +92,63 @@ public class BoardManager : MonoBehaviour
     //move a character, x is the x-coordinate, y is the y-coordinate you clicked
     private void moveCharacter(int x, int y)
     {
-        //unfinished, if the position you selected is a valid move, move the character
-        if(allowedMoves[x,y] == true)
+        //if the selected tile is an enemy, damage the enemy, if they are at 0 hp, remove the enemy
+        if(allowedMoves[x,y] == true && Characters[x,y] != null && Characters[x,y].isAlly == false)
+        {
+            Characters[selectedCharacter.currentX, selectedCharacter.currentY] = null;
+
+            //Finds the nearest spot next to an enemy if you attack one.
+            int tempX = 0, tempY = 0, newX = 0, newY = 0;
+            double minDist = 0;
+
+            //bottom
+            tempX = x;
+            tempY = y - 1;
+            minDist = findDistance(tempX,tempY,selectedCharacter.currentX, selectedCharacter.currentY);
+            newX = tempX;
+            newY = tempY;
+
+            //left
+            tempX = x-1;
+            tempY = y;
+            if (minDist > findDistance(tempX, tempY, selectedCharacter.currentX, selectedCharacter.currentY))
+            {
+                minDist = findDistance(tempX, tempY, selectedCharacter.currentX, selectedCharacter.currentY);
+                newX = tempX;
+                newY = tempY;
+            }
+
+            //right
+            tempX = x + 1;
+            tempY = y;
+            if (minDist > findDistance(tempX, tempY, selectedCharacter.currentX, selectedCharacter.currentY))
+            {
+                minDist = findDistance(tempX, tempY, selectedCharacter.currentX, selectedCharacter.currentY);
+                newX = tempX;
+                newY = tempY;
+            }
+
+            //top
+            tempX = x;
+            tempY = y+1;
+            if (minDist > findDistance(tempX, tempY, selectedCharacter.currentX, selectedCharacter.currentY))
+            {
+                newX = tempX;
+                newY = tempY;
+            }
+
+            selectedCharacter.transform.position = getTileCenter(newX, newY);
+            selectedCharacter.setPosition(newX, newY);
+            Characters[newX, newY] = selectedCharacter;
+
+            Characters[x, y].hp--;
+            if(Characters[x,y].hp <= 0)
+            {
+                //tbd
+            }
+        }
+        //if the position you selected is a valid move, move the character
+        else if (allowedMoves[x, y] == true && Characters[x, y] == null)
         {
             Characters[selectedCharacter.currentX, selectedCharacter.currentY] = null;
             selectedCharacter.transform.position = getTileCenter(x, y);
@@ -127,7 +185,7 @@ public class BoardManager : MonoBehaviour
     //index is the index in a character array, x is the x-coordinate, y is the y-coordinate on the board
     private void spawnCharacter(int index, int x, int y)
     {
-        GameObject go = Instantiate(heroes[index], getTileCenter(x,y), orientation) as GameObject;
+        GameObject go = Instantiate(entities[index], getTileCenter(x,y), orientation) as GameObject;
         go.transform.SetParent(transform);
         Characters[x, y] = go.GetComponent<Character>();
         Characters[x, y].setPosition(x, y);
@@ -169,4 +227,10 @@ public class BoardManager : MonoBehaviour
                            Vector3.forward * selectionY + Vector3.right * (selectionX + 1));
         }
     }
+
+    private double findDistance(int x1, int y1, int x2, int y2)
+    {
+        return Math.Sqrt(Math.Pow((x1 - x2), 2) + Math.Pow((y1 - y2), 2));
+    }
+
 }

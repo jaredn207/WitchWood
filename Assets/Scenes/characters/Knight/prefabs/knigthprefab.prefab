@@ -2685,9 +2685,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isAlly: 1
-  healthPoints: 0
-  defence: 0
-  moveDistance: 0
+  hp: 10
+  moveDistance: 3
 --- !u!137 &137135025667560128
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

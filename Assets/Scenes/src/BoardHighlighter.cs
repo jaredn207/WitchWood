@@ -7,7 +7,10 @@ public class BoardHighlighter : MonoBehaviour
     public static BoardHighlighter Instance { set; get; }
 
     public GameObject highlightPrefab;
+    public GameObject enemyHighlightPrefab;
+
     private List<GameObject> highlights;
+    internal object selectedCharacter;
 
     private void Start()
     {
@@ -17,11 +20,24 @@ public class BoardHighlighter : MonoBehaviour
 
     private GameObject getHighlightObject()
     {
-        GameObject go = highlights.Find(g => !g.activeSelf);
+        GameObject go = null;
 
         if(go == null)
         {
             go = Instantiate(highlightPrefab);
+            highlights.Add(go);
+        }
+
+        return go;
+    }
+
+    private GameObject getEnemyHighlightObject()
+    {
+        GameObject go = null;
+
+        if (go == null)
+        {
+            go = Instantiate(enemyHighlightPrefab);
             highlights.Add(go);
         }
 
@@ -36,9 +52,17 @@ public class BoardHighlighter : MonoBehaviour
             {
                 if(moves[i,j] == true)
                 {
-                    GameObject go = getHighlightObject();
+                    GameObject go;
+                    if(BoardManager.Characters[i,j] != null && BoardManager.Characters[i,j].isAlly == false)
+                    {
+                        go = getEnemyHighlightObject();
+                    }
+                    else
+                    {
+                        go = getHighlightObject();
+                    }
                     go.SetActive(true);
-                    go.transform.position = new Vector3(i+0.5f, 0, j+0.5f);
+                    go.transform.position = new Vector3(i + 0.5f, 0, j + 0.5f);
                 }
             }
         }
@@ -47,6 +71,6 @@ public class BoardHighlighter : MonoBehaviour
     public void hideHighlights()
     {
         foreach (GameObject go in highlights)
-            go.SetActive(false);
+            Object.Destroy(go);
     }
 }
