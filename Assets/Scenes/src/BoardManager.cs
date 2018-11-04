@@ -5,12 +5,14 @@ using System;
 
 public class BoardManager : MonoBehaviour
 {
+    public Camera player1Camera, player2Camera;
+
     public static BoardManager Instance { set; get; }
     private bool[,] allowedMoves { set; get; }
 
     //array of characters that  are moveable
     public static Character[,] Characters { set; get; }
-    private Character selectedCharacter;
+    public static Character selectedCharacter;
 
     //Tile size, middle of the first tile is (0.5,0.5)
     private const float TILE_SIZE = 1.0f;
@@ -29,7 +31,7 @@ public class BoardManager : MonoBehaviour
     private Quaternion orientation = Quaternion.Euler(0, 0, 0);
 
     //Is it your turn?
-    public bool isAllyTurn = true;
+    public bool isPlayer1Turn = true;
 
     //Board size, x * x. Only change this to modify the board size.
     public const int boardSize = 8;
@@ -40,8 +42,18 @@ public class BoardManager : MonoBehaviour
     {
         activeCharacter = new List<GameObject>();
         Characters = new Character[boardSize,boardSize];
-        spawnCharacter(0, 0, 0);//knight
-        spawnCharacter(1, 1, 1);//demon
+
+        //knight player 1
+        spawnCharacter(0, 0, 0);
+        Characters[0, 0].isPlayer1 = true;
+
+        //knight player 2
+        spawnCharacter(0, 7, 7);
+        Characters[7, 7].isPlayer1 = false;
+        Characters[7, 7].transform.localRotation *= Quaternion.Euler(0, 180, 0);
+
+        player1Camera.enabled = true;
+        player2Camera.enabled = false;
     }
 
     //Draws the board with the debugger, allows the player to move and select characters;
@@ -68,6 +80,7 @@ public class BoardManager : MonoBehaviour
                 }
             }
         }
+
     }
 
     //select a character, x is the x-coordinate, y is the y-coordinate you clicked
@@ -78,7 +91,11 @@ public class BoardManager : MonoBehaviour
             return;
         
         //if there is no character on the tile and it's not your turn, return
-        if (Characters[x, y].isAlly != isAllyTurn)
+        if (Characters[x, y].isPlayer1 != isPlayer1Turn)
+            return;
+
+        //if the character has already moved
+        if (Characters[x, y].hasMoved == true)
             return;
 
         allowedMoves = Characters[x, y].possibleMove();
@@ -93,7 +110,7 @@ public class BoardManager : MonoBehaviour
     private void moveCharacter(int x, int y)
     {
         //if the selected tile is an enemy, damage the enemy, if they are at 0 hp, remove the enemy
-        if(allowedMoves[x,y] == true && Characters[x,y] != null && Characters[x,y].isAlly == false)
+        if(allowedMoves[x,y] == true && Characters[x,y] != null && Characters[selectedCharacter.currentX, selectedCharacter.currentY].isPlayer1 != Characters[x,y].isPlayer1)
         {
             Characters[selectedCharacter.currentX, selectedCharacter.currentY] = null;
 
@@ -144,8 +161,10 @@ public class BoardManager : MonoBehaviour
             Characters[x, y].hp--;
             if(Characters[x,y].hp <= 0)
             {
-                //tbd
+                Destroy(Characters[x, y].gameObject);
+                Characters[x, y] = null;
             }
+            Characters[x, y].hasMoved = true;
         }
         //if the position you selected is a valid move, move the character
         else if (allowedMoves[x, y] == true && Characters[x, y] == null)
@@ -154,6 +173,7 @@ public class BoardManager : MonoBehaviour
             selectedCharacter.transform.position = getTileCenter(x, y);
             selectedCharacter.setPosition(x, y);
             Characters[x, y] = selectedCharacter;
+            Characters[x, y].hasMoved = true;
         }
 
         BoardHighlighter.Instance.hideHighlights();
@@ -231,6 +251,23 @@ public class BoardManager : MonoBehaviour
     private double findDistance(int x1, int y1, int x2, int y2)
     {
         return Math.Sqrt(Math.Pow((x1 - x2), 2) + Math.Pow((y1 - y2), 2));
+    }
+
+    public void endTurn()
+    {
+        isPlayer1Turn = !isPlayer1Turn;
+        for(int i = 0; i< boardSize; i++)
+        {
+            for(int j = 0; j< boardSize; j++)
+            {
+                if (isPlayer1Turn && Characters[i, j] != null && Characters[i, j].isPlayer1)
+                    Characters[i, j].hasMoved = false;
+                else if (!isPlayer1Turn && Characters[i, j] != null && !Characters[i, j].isPlayer1)
+                    Characters[i, j].hasMoved = false;
+            }
+        }
+        player1Camera.enabled = !player1Camera.enabled;
+        player2Camera.enabled = !player2Camera.enabled;
     }
 
 }

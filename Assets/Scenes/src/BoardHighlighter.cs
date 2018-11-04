@@ -53,7 +53,7 @@ public class BoardHighlighter : MonoBehaviour
                 if(moves[i,j] == true)
                 {
                     GameObject go;
-                    if(BoardManager.Characters[i,j] != null && BoardManager.Characters[i,j].isAlly == false)
+                    if(BoardManager.Characters[i,j] != null && BoardManager.Characters[i,j].isPlayer1 != BoardManager.selectedCharacter.isPlayer1)
                     {
                         go = getEnemyHighlightObject();
                     }

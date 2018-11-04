@@ -6,7 +6,8 @@ public abstract class Character : MonoBehaviour
 {
     public int currentX { set; get; }
     public int currentY { set; get; }
-    public bool isAlly;
+    public bool isPlayer1;
+    public bool hasMoved = false;
     public int hp;
 
     public int moveDistance;
