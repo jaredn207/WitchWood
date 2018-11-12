@@ -4,72 +4,31 @@ using UnityEngine.EventSystems;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Draggable : MonoBehaviour,IBeginDragHandler,IDragHandler,IEndDragHandler{
-   public   Transform parentToReturnTo = null;
-    public Transform placehodlerParent = null;
-    public enum Slot { WEAPON, HEAD, CHEST, LEGS, FEET };
+public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler{
 
-    GameObject placeholder = null;
 
-    public Slot typeOfItem = Slot.WEAPON;
+    Transform parentToReturnTo = null;
 
     public void OnBeginDrag(PointerEventData eventData)
-    {   
-
+    {
         Debug.Log("OnBeginDrag");
-        placeholder = new GameObject();
-        placeholder.transform.SetParent(this.transform.parent);
-        LayoutElement le = placeholder.AddComponent<LayoutElement>();
-
-        le.preferredWidth = this.GetComponent<LayoutElement>().preferredWidth;
-
-        le.preferredHeight = this.GetComponent<LayoutElement>().preferredHeight;
-
-        le.flexibleWidth = 0;
-
-        le.flexibleHeight = 0;
-        placeholder.transform.SetSiblingIndex(this.transform.GetSiblingIndex());
-
-
         parentToReturnTo = this.transform.parent;
-        placehodlerParent = parentToReturnTo;
         this.transform.SetParent(this.transform.parent.parent);
-
-        GetComponent<CanvasGroup>().blocksRaycasts = false;
-
+    
     }
 
-    public void OnDrag(PointerEventData eventData)
-    {
-        //Debug.Log("OnDrag");
-        this.transform.position = eventData.position;
-        if (placeholder.transform.parent != placehodlerParent)
-            placeholder.transform.SetParent(placehodlerParent);
+public void OnDrag(PointerEventData eventData)
+{
+      Debug.Log("OnDrag");
+      // this.transform.position = eventData.position;
+        Vector3 screenPoint = Input.mousePosition;
+        screenPoint.z = 1.0f; //distance of the plane from the camera
+        this.transform.position = Camera.main.ScreenToWorldPoint(screenPoint);
+  }
 
-        int newSiblingIndex = placehodlerParent.childCount;
-
-        for (int i = 0; i < placehodlerParent.childCount;i++){
-
-            if (this.transform.position.x< placehodlerParent.GetChild(i).position.x)
-            {
-                newSiblingIndex = i;
-
-                if(placeholder.transform.GetSiblingIndex()<newSiblingIndex)
-                newSiblingIndex--;
-                break;
-
-            }
-
-        }
-        placeholder.transform.SetSiblingIndex(newSiblingIndex);
-    }
-    public void OnEndDrag(PointerEventData eventData)
-    {
-
-        Debug.Log("OnEndDrag");
-        this.transform.SetParent(parentToReturnTo);
-        this.transform.SetSiblingIndex(placeholder.transform.GetSiblingIndex());
-        GetComponent<CanvasGroup>().blocksRaycasts = true;
-        Destroy(placeholder);
-    }
+public void OnEndDrag(PointerEventData eventData)
+{
+    Debug.Log("OnEndDrag");
+    
 }
+ }
