@@ -5,6 +5,7 @@ using System;
 
 public class BoardManager : MonoBehaviour
 {
+    //Cameras for both players, allows them to be modified in code.
     public Camera player1Camera, player2Camera;
 
     public static BoardManager Instance { set; get; }
@@ -33,6 +34,9 @@ public class BoardManager : MonoBehaviour
     //Is it your turn?
     public bool isPlayer1Turn = true;
 
+    //Has the player used a card yet?
+    private bool canPlayCard = true;
+
     //Board size, x * x. Only change this to modify the board size.
     public const int boardSize = 8;
 
@@ -46,11 +50,13 @@ public class BoardManager : MonoBehaviour
         //knight player 1
         spawnCharacter(0, 0, 0);
         Characters[0, 0].isPlayer1 = true;
+        Characters[0, 0].isLeader = true;
 
         //knight player 2
         spawnCharacter(0, 7, 7);
         Characters[7, 7].isPlayer1 = false;
         Characters[7, 7].transform.localRotation *= Quaternion.Euler(0, 180, 0);
+        Characters[7, 7].isLeader = true;
 
         player1Camera.enabled = true;
         player2Camera.enabled = false;
@@ -248,11 +254,13 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    //finds the distance from one tile to another.
     private double findDistance(int x1, int y1, int x2, int y2)
     {
         return Math.Sqrt(Math.Pow((x1 - x2), 2) + Math.Pow((y1 - y2), 2));
     }
 
+    //Changes the camera to the other player, finds all the characters and resets their movement.
     public void endTurn()
     {
         isPlayer1Turn = !isPlayer1Turn;
@@ -266,8 +274,77 @@ public class BoardManager : MonoBehaviour
                     Characters[i, j].hasMoved = false;
             }
         }
+        canPlayCard = true;
         player1Camera.enabled = !player1Camera.enabled;
         player2Camera.enabled = !player2Camera.enabled;
     }
 
+    //wrapper funciton for summoning
+    public void summon()
+    {
+        if (canPlayCard == true)
+        {
+            StartCoroutine(summonKnight());
+        }
+    }
+
+    //function for summoning, meant to be attached to a button.
+    //When you click a button this function is attached to, it will wait for another click.
+    //if the tile you click is out of range of the leader, the summon won't take effect.
+    private IEnumerator summonKnight()
+    {
+        while (!Input.GetMouseButtonDown(0))
+        {
+            yield return null;
+        }
+        if(isPlayer1Turn)
+        {
+            Character leader = getLeader();
+            Debug.Log(leader.isPlayer1);
+            if(findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(0, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = true;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    canPlayCard = false;
+                }  
+            }
+                
+        }
+        else if(!isPlayer1Turn)
+        {
+            Character leader = getLeader();
+            if(findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(0, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = false;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    Characters[selectionX, selectionY].transform.localRotation *= Quaternion.Euler(0, 180, 0);
+                    canPlayCard = false;
+                }
+            }
+            
+        }
+        yield return new WaitForFixedUpdate();
+    }
+
+    //returns the leader depending on whos turn it is
+    private Character getLeader()
+    {
+        for(int i = 0; i<boardSize; i++)
+        {
+            for (int j = 0; j < boardSize; j++)
+            {
+                if (Characters[i,j] != null && Characters[i, j].isLeader == true && isPlayer1Turn && Characters[i, j].isPlayer1)
+                    return Characters[i, j];
+                else if (Characters[i, j] != null && Characters[i, j].isLeader == true && !isPlayer1Turn && !Characters[i, j].isPlayer1)
+                    return Characters[i, j];
+            }
+        }
+        return null;
+    }
 }

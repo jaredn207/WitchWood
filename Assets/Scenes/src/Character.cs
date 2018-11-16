@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class Character : MonoBehaviour
 {
@@ -9,6 +7,7 @@ public abstract class Character : MonoBehaviour
     public bool isPlayer1;
     public bool hasMoved = false;
     public int hp;
+    public bool isLeader;
 
     public int moveDistance;
 
