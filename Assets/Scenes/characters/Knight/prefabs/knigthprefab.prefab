@@ -2684,7 +2684,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 231201be744ff984e85f05534ce96455, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAlly: 1
+  isPlayer1: 0
+  hasMoved: 0
   hp: 10
   moveDistance: 3
 --- !u!137 &137135025667560128
