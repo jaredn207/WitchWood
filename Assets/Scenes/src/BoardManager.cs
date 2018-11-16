@@ -164,11 +164,10 @@ public class BoardManager : MonoBehaviour
             selectedCharacter.setPosition(newX, newY);
             Characters[newX, newY] = selectedCharacter;
 
-            Characters[x, y].hp--;
+            Characters[x, y].takeDamage(1);
             if(Characters[x,y].hp <= 0)
             {
-                Destroy(Characters[x, y].gameObject);
-                Characters[x, y] = null;
+                Characters[x, y].die();
             }
             Characters[x, y].hasMoved = true;
         }
