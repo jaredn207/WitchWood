@@ -24,6 +24,8 @@ public class BoardManager : MonoBehaviour
     public List<GameObject> entities;
     private List<GameObject> activeCharacter;
 
+    public GameObject healthBar;
+
     //position of the character,(x,y,z). X flips the character up and down, y rotates the character,
     //z flips the character up and down in the other direction
     private Quaternion orientation = Quaternion.Euler(0, 0, 0);
@@ -141,11 +143,12 @@ public class BoardManager : MonoBehaviour
             selectedCharacter.setPosition(newX, newY);
             Characters[newX, newY] = selectedCharacter;
 
-            Characters[x, y].hp--;
-            if(Characters[x,y].hp <= 0)
+            //character takes damage in Character script
+            Characters[x, y].takeDamage(1);
+            /*if(Characters[x,y].hp <= 0)
             {
                 //tbd
-            }
+            }*/
         }
         //if the position you selected is a valid move, move the character
         else if (allowedMoves[x, y] == true && Characters[x, y] == null)
@@ -189,6 +192,14 @@ public class BoardManager : MonoBehaviour
         go.transform.SetParent(transform);
         Characters[x, y] = go.GetComponent<Character>();
         Characters[x, y].setPosition(x, y);
+
+        //attach health bar to enemy only
+        if (index == 1 && healthBar!=null)
+        {
+            GameObject hBar = Instantiate(healthBar, go.transform);
+            go.SendMessage("attachHealthBar", hBar);
+        }
+
         activeCharacter.Add(go);
     }
 

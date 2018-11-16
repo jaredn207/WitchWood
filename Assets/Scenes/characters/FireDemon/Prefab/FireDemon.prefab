@@ -1546,6 +1546,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isAlly: 0
+  health_bar: {fileID: 0}
+  max_health: 10
   hp: 10
   moveDistance: 2
 --- !u!137 &137000012808390422
