@@ -34,6 +34,9 @@ public class BoardManager : MonoBehaviour
     //Is it your turn?
     public bool isPlayer1Turn = true;
 
+    //Has already attacked this turn
+    public bool hasAttacked = false;
+
     //Has the player used a card yet?
     private bool canPlayCard = true;
 
@@ -105,6 +108,10 @@ public class BoardManager : MonoBehaviour
             return;
 
         allowedMoves = Characters[x, y].possibleMove();
+        if (hasAttacked)
+        {
+            allowedMoves = new bool [BoardManager.boardSize , BoardManager.boardSize];
+        }
 
         //set the selected character to the character you clicked
         selectedCharacter = Characters[x, y];
@@ -116,7 +123,7 @@ public class BoardManager : MonoBehaviour
     private void moveCharacter(int x, int y)
     {
         //if the selected tile is an enemy, damage the enemy, if they are at 0 hp, remove the enemy
-        if(allowedMoves[x,y] == true && Characters[x,y] != null && Characters[selectedCharacter.currentX, selectedCharacter.currentY].isPlayer1 != Characters[x,y].isPlayer1)
+        if (allowedMoves[x, y] == true && Characters[x, y] != null && Characters[selectedCharacter.currentX, selectedCharacter.currentY].isPlayer1 != Characters[x, y].isPlayer1)
         {
             Characters[selectedCharacter.currentX, selectedCharacter.currentY] = null;
 
@@ -127,12 +134,12 @@ public class BoardManager : MonoBehaviour
             //bottom
             tempX = x;
             tempY = y - 1;
-            minDist = findDistance(tempX,tempY,selectedCharacter.currentX, selectedCharacter.currentY);
+            minDist = findDistance(tempX, tempY, selectedCharacter.currentX, selectedCharacter.currentY);
             newX = tempX;
             newY = tempY;
 
             //left
-            tempX = x-1;
+            tempX = x - 1;
             tempY = y;
             if (minDist > findDistance(tempX, tempY, selectedCharacter.currentX, selectedCharacter.currentY))
             {
@@ -153,7 +160,7 @@ public class BoardManager : MonoBehaviour
 
             //top
             tempX = x;
-            tempY = y+1;
+            tempY = y + 1;
             if (minDist > findDistance(tempX, tempY, selectedCharacter.currentX, selectedCharacter.currentY))
             {
                 newX = tempX;
@@ -164,12 +171,17 @@ public class BoardManager : MonoBehaviour
             selectedCharacter.setPosition(newX, newY);
             Characters[newX, newY] = selectedCharacter;
 
-            Characters[x, y].takeDamage(1);
-            if(Characters[x,y].hp <= 0)
+            if (!hasAttacked)
             {
-                Characters[x, y].die();
+                hasAttacked = true;
+
+                Characters[x, y].takeDamage(1);
+                if (Characters[x, y].hp <= 0)
+                {
+                    Characters[x, y].die();
+                }
+                Characters[x, y].hasMoved = true;
             }
-            Characters[x, y].hasMoved = true;
         }
         //if the position you selected is a valid move, move the character
         else if (allowedMoves[x, y] == true && Characters[x, y] == null)
@@ -268,14 +280,22 @@ public class BoardManager : MonoBehaviour
             for(int j = 0; j< boardSize; j++)
             {
                 if (isPlayer1Turn && Characters[i, j] != null && Characters[i, j].isPlayer1)
+                {
                     Characters[i, j].hasMoved = false;
+                }
+
                 else if (!isPlayer1Turn && Characters[i, j] != null && !Characters[i, j].isPlayer1)
+                {
                     Characters[i, j].hasMoved = false;
+                }
+
             }
         }
         canPlayCard = true;
         player1Camera.enabled = !player1Camera.enabled;
         player2Camera.enabled = !player2Camera.enabled;
+
+        hasAttacked = false;
     }
 
     //wrapper funciton for summoning
@@ -331,7 +351,7 @@ public class BoardManager : MonoBehaviour
         yield return new WaitForFixedUpdate();
     }
 
-    //returns the leader depending on whos turn it is
+    //returns the leader depending on whose turn it is
     private Character getLeader()
     {
         for(int i = 0; i<boardSize; i++)

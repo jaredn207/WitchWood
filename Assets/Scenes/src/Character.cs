@@ -6,6 +6,7 @@ public abstract class Character : MonoBehaviour
     public int currentY { set; get; }
     public bool isPlayer1;
     public bool hasMoved = false;
+    public bool hasAttacked = false;
     public bool isLeader;
 
     public float max_health = 10;
