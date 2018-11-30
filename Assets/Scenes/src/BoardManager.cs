@@ -92,6 +92,12 @@ public class BoardManager : MonoBehaviour
 
     }
 
+    private void clearMoves()
+    {
+        allowedMoves = new bool[BoardManager.boardSize, BoardManager.boardSize];
+        BoardHighlighter.Instance.hideHighlights();
+    }
+
     //select a character, x is the x-coordinate, y is the y-coordinate you clicked
     private void selectCharacter(int x, int y)
     {
@@ -108,9 +114,12 @@ public class BoardManager : MonoBehaviour
             return;
 
         allowedMoves = Characters[x, y].possibleMove();
+
+        //adjustVisibility();
+
         if (hasAttacked)
         {
-            allowedMoves = new bool [BoardManager.boardSize , BoardManager.boardSize];
+            clearMoves();
         }
 
         //set the selected character to the character you clicked
@@ -275,6 +284,8 @@ public class BoardManager : MonoBehaviour
     public void endTurn()
     {
         isPlayer1Turn = !isPlayer1Turn;
+        selectedCharacter = null;
+        clearMoves();
         for(int i = 0; i< boardSize; i++)
         {
             for(int j = 0; j< boardSize; j++)
