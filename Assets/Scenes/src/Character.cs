@@ -7,11 +7,14 @@ public abstract class Character : MonoBehaviour
     public bool isPlayer1;
     public bool hasMoved = false;
     public bool hasAttacked = false;
+    public bool isBuffed = false;
     public bool isLeader;
 
     public float max_health = 10;
     public float hp = 10;
     public GameObject health_bar;
+
+    public int attack = 1;
 
     public int moveDistance;
 

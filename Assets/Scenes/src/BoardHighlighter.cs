@@ -115,6 +115,68 @@ public class BoardHighlighter : MonoBehaviour
         }
     }
 
+    public void highlightBuffPlacementArea(bool[,] moves)
+    {
+        for (int i = 0; i < BoardManager.boardSize; i++)
+        {
+            for (int j = 0; j < BoardManager.boardSize; j++)
+            {
+                if (moves[i, j] == true)
+                {
+                    GameObject go;
+
+                    //if the tile is an enemy, don't highlight it
+                    if (BoardManager.Characters[i, j] != null && BoardManager.Characters[i, j].isPlayer1 != BoardManager.selectedCharacter.isPlayer1) { }
+                    //if the tile is an ally, don't highlight it
+                    else if (BoardManager.Characters[i, j] != null && BoardManager.Characters[i, j].isPlayer1 == BoardManager.selectedCharacter.isPlayer1)
+                    {
+                        go = getCardHighlightObject();
+                        go.SetActive(true);
+                        go.transform.position = new Vector3(i + 0.5f, .01f, j + 0.5f);
+                    }
+                    //if the tile is empty, highlight it green
+                    else
+                    {
+                        go = getCardHighlightObject();
+                        go.SetActive(true);
+                        go.transform.position = new Vector3(i + 0.5f, .01f, j + 0.5f);
+                    }
+                }
+            }
+        }
+    }
+
+    public void highlightCardAttackArea(bool[,] moves)
+    {
+        for (int i = 0; i < BoardManager.boardSize; i++)
+        {
+            for (int j = 0; j < BoardManager.boardSize; j++)
+            {
+                if (moves[i, j] == true)
+                {
+                    GameObject go;
+
+                    //if the tile is an enemy, highlight it
+                    if (BoardManager.Characters[i, j] != null && BoardManager.Characters[i, j].isPlayer1 != BoardManager.selectedCharacter.isPlayer1)
+                    {
+                        go = getEnemyHighlightObject();
+                        go.SetActive(true);
+                        go.transform.position = new Vector3(i + 0.5f, .01f, j + 0.5f);
+                    }
+                    //if the tile is an ally, don't highlight it
+                    else if (BoardManager.Characters[i, j] != null && BoardManager.Characters[i, j].isPlayer1 == BoardManager.selectedCharacter.isPlayer1) { }
+                    //if the tile is empty, highlight it red
+                    else
+                    {
+                        go = getEnemyHighlightObject();
+                        go.SetActive(true);
+                        go.transform.position = new Vector3(i + 0.5f, .01f, j + 0.5f);
+                    }
+                }
+            }
+        }
+    }
+
     public void hideHighlights()
     {
         foreach (GameObject go in highlights)

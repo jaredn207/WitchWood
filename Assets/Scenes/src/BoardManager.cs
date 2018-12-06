@@ -181,16 +181,16 @@ public class BoardManager : MonoBehaviour
             selectedCharacter.setPosition(newX, newY);
             Characters[newX, newY] = selectedCharacter;
 
-            if (!hasAttacked)
+            if (!selectedCharacter.hasAttacked)
             {
-                hasAttacked = true;
+                selectedCharacter.hasAttacked = true;
 
-                Characters[x, y].takeDamage(1);
+                Characters[x, y].takeDamage(selectedCharacter.attack);
                 if (Characters[x, y].hp <= 0)
                 {
                     Characters[x, y].die();
                 }
-                Characters[x, y].hasMoved = true;
+                selectedCharacter.hasMoved = true;
             }
         }
         //if the position you selected is a valid move, move the character
@@ -293,11 +293,13 @@ public class BoardManager : MonoBehaviour
                 if (isPlayer1Turn && Characters[i, j] != null && Characters[i, j].isPlayer1)
                 {
                     Characters[i, j].hasMoved = false;
+                    Characters[i, j].hasAttacked = false;
                 }
 
                 else if (!isPlayer1Turn && Characters[i, j] != null && !Characters[i, j].isPlayer1)
                 {
                     Characters[i, j].hasMoved = false;
+                    Characters[i, j].hasAttacked = false;
                 }
 
             }
@@ -671,6 +673,218 @@ public class BoardManager : MonoBehaviour
                     Characters[selectionX, selectionY].isPlayer1 = false;
                     Characters[selectionX, selectionY].isLeader = false;
                     Characters[selectionX, selectionY].transform.localRotation *= Quaternion.Euler(0, 180, 0);
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        yield return new WaitForFixedUpdate();
+    }
+
+    public void fireBall()
+    {
+        if (canPlayCard == true)
+        {
+            isUsingCard = true;
+            Character leader = getLeader();
+            selectedCharacter = leader;
+            BoardHighlighter.Instance.highlightCardAttackArea(leader.possibleMove());
+            StartCoroutine(fireBallB());
+        }
+    }
+
+    private IEnumerator fireBallB()
+    {
+        while (!Input.GetMouseButtonDown(0))
+        {
+            yield return null;
+        }
+        BoardHighlighter.Instance.hideHighlights();
+        if (isPlayer1Turn)
+        {
+            Character leader = getLeader();
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == false)
+                {
+                    Characters[selectionX, selectionY].takeDamage(10);
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        else if (!isPlayer1Turn)
+        {
+            Character leader = getLeader();
+
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX,selectionY].isPlayer1 == true)
+                {
+                    Characters[selectionX, selectionY].takeDamage(10);
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        yield return new WaitForFixedUpdate();
+    }
+
+    public void axe()
+    {
+        if (canPlayCard == true)
+        {
+            isUsingCard = true;
+            Character leader = getLeader();
+            selectedCharacter = leader;
+            BoardHighlighter.Instance.highlightBuffPlacementArea(leader.possibleMove());
+            StartCoroutine(axeB());
+        }
+    }
+
+    private IEnumerator axeB()
+    {
+        while (!Input.GetMouseButtonDown(0))
+        {
+            yield return null;
+        }
+        BoardHighlighter.Instance.hideHighlights();
+        if (isPlayer1Turn)
+        {
+            Character leader = getLeader();
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == true && !Characters[selectionX, selectionY].isBuffed)
+                {
+                    Characters[selectionX, selectionY].attack += 6;
+                    Characters[selectionX, selectionY].isBuffed = true;
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        else if (!isPlayer1Turn)
+        {
+            Character leader = getLeader();
+
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == false && !Characters[selectionX, selectionY].isBuffed)
+                {
+                    Characters[selectionX, selectionY].attack += 6;
+                    Characters[selectionX, selectionY].isBuffed = true;
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        yield return new WaitForFixedUpdate();
+    }
+
+    public void darkness()
+    {
+        if (canPlayCard == true)
+        {
+            isUsingCard = true;
+            Character leader = getLeader();
+            selectedCharacter = leader;
+            BoardHighlighter.Instance.highlightCardAttackArea(leader.possibleMove());
+            StartCoroutine(darknessB());
+        }
+    }
+
+    private IEnumerator darknessB()
+    {
+        while (!Input.GetMouseButtonDown(0))
+        {
+            yield return null;
+        }
+        BoardHighlighter.Instance.hideHighlights();
+        if (isPlayer1Turn)
+        {
+            Character leader = getLeader();
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == false)
+                {
+                    Characters[selectionX, selectionY].takeDamage(1);
+                    if (Characters[selectionX, selectionY].attack > 2)
+                        Characters[selectionX, selectionY].attack -= 2;
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        else if (!isPlayer1Turn)
+        {
+            Character leader = getLeader();
+
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == true)
+                {
+                    Characters[selectionX, selectionY].takeDamage(1);
+                    if (Characters[selectionX, selectionY].attack > 2)
+                        Characters[selectionX, selectionY].attack -= 2;
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        yield return new WaitForFixedUpdate();
+    }
+
+    public void pathFinding()
+    {
+        if (canPlayCard == true)
+        {
+            isUsingCard = true;
+            Character leader = getLeader();
+            selectedCharacter = leader;
+            BoardHighlighter.Instance.highlightBuffPlacementArea(leader.possibleMove());
+            StartCoroutine(pathFindingB());
+        }
+    }
+
+    private IEnumerator pathFindingB()
+    {
+        while (!Input.GetMouseButtonDown(0))
+        {
+            yield return null;
+        }
+        BoardHighlighter.Instance.hideHighlights();
+        if (isPlayer1Turn)
+        {
+            Character leader = getLeader();
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == true)
+                {
+                    //Characters[selectionX, selectionY].hasMoved = false;
+                    //Characters[selectionX, selectionY].hasAttacked = false;
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        else if (!isPlayer1Turn)
+        {
+            Character leader = getLeader();
+
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == false)
+                {
+                    //Characters[selectionX, selectionY].hasMoved = false;
+                    //Characters[selectionX, selectionY].hasAttacked = false;
                     canPlayCard = false;
                 }
             }
