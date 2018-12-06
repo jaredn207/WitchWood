@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scenes\src\DropZone.cs" />
     <Compile Include="Assets\Scenes\src\HealthBar.cs" />
     <Compile Include="Assets\Scenes\src\Knight.cs" />
+    <Compile Include="Assets\Scenes\src\Witch.cs" />
     <None Include="Assets\Scenes\prefabs\Stylized Forest Lite\Readme.txt" />
     <None Include="Assets\Scenes\characters\Archer\FantasyMonster2\Elf Archer Pack\readMe.txt" />
     <None Include="Assets\Scenes\characters\Knight\shaders\doublesidedshader.shader" />
