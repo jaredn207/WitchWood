@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.43667555, g: 0.48427182, b: 0.5645241, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366756, g: 0.48427194, b: 0.5645252, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4294,6 +4294,16 @@ Prefab:
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 114892477498063370, guid: 71c933b81a5dc45059dfde1200a6aa57,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1381791552}
+    - target: {fileID: 114892477498063370, guid: 71c933b81a5dc45059dfde1200a6aa57,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: summonFootSoldier
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114076601577564908, guid: 71c933b81a5dc45059dfde1200a6aa57, type: 2}
   m_SourcePrefab: {fileID: 100100000, guid: 71c933b81a5dc45059dfde1200a6aa57, type: 2}
@@ -4490,6 +4500,16 @@ Prefab:
         type: 2}
       propertyPath: m_BlocksRaycasts
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114892477498063370, guid: 71c933b81a5dc45059dfde1200a6aa57,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1381791552}
+    - target: {fileID: 114892477498063370, guid: 71c933b81a5dc45059dfde1200a6aa57,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: summonWitch
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114076601577564908, guid: 71c933b81a5dc45059dfde1200a6aa57, type: 2}
@@ -4717,7 +4737,7 @@ Prefab:
     - target: {fileID: 114302177247602078, guid: 71c933b81a5dc45059dfde1200a6aa57,
         type: 2}
       propertyPath: m_Text
-      value: Can absorb 3 attacks
+      value: High defence due to their small size
       objectReference: {fileID: 0}
     - target: {fileID: 114814653142789428, guid: 71c933b81a5dc45059dfde1200a6aa57,
         type: 2}
@@ -4733,11 +4753,11 @@ Prefab:
     - target: {fileID: 114844678082013760, guid: 71c933b81a5dc45059dfde1200a6aa57,
         type: 2}
       propertyPath: m_Text
-      value: Ooze
+      value: Gnome
       objectReference: {fileID: 0}
     - target: {fileID: 1604492366473964, guid: 71c933b81a5dc45059dfde1200a6aa57, type: 2}
       propertyPath: m_Name
-      value: Slime Card
+      value: Gnome Card
       objectReference: {fileID: 0}
     - target: {fileID: 224435960514492108, guid: 71c933b81a5dc45059dfde1200a6aa57,
         type: 2}
@@ -4757,7 +4777,7 @@ Prefab:
     - target: {fileID: 114892477498063370, guid: 71c933b81a5dc45059dfde1200a6aa57,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: summonSlime
+      value: summonGnome
       objectReference: {fileID: 0}
     - target: {fileID: 225604723468955076, guid: 71c933b81a5dc45059dfde1200a6aa57,
         type: 2}
@@ -4849,6 +4869,11 @@ Prefab:
     - target: {fileID: 1604492366473964, guid: 71c933b81a5dc45059dfde1200a6aa57, type: 2}
       propertyPath: m_TagString
       value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 224752854262345334, guid: 71c933b81a5dc45059dfde1200a6aa57,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: 9.8
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114076601577564908, guid: 71c933b81a5dc45059dfde1200a6aa57, type: 2}
@@ -5259,6 +5284,10 @@ MonoBehaviour:
   - {fileID: 1236825674881826, guid: aaa914194bae357438917cb2dcec4944, type: 2}
   - {fileID: 1514670060551906, guid: 847d5eb5e2e03164e8515bfe0311ffa8, type: 2}
   - {fileID: 1076646023500954, guid: 17cd98a08fed9f34c97962c1abc85efd, type: 2}
+  - {fileID: 1518331517550964, guid: 0a696ff671b3e0e499d6c81f9bccec8b, type: 2}
+  - {fileID: 1703700079775726, guid: 1919e96d90d286a4e8fa753f822169f0, type: 2}
+  - {fileID: 1895183517854024, guid: f703e558b600d734285b5d026dc80c7a, type: 2}
+  - {fileID: 1979250217178166, guid: 5c4327be08970fc489033fde78306e19, type: 2}
   isPlayer1Turn: 1
   hasAttacked: 0
 --- !u!114 &1381791553
@@ -5275,6 +5304,8 @@ MonoBehaviour:
   highlightPrefab: {fileID: 1659211259015504, guid: 76635ba33c1f8d84483cb736bab886cc,
     type: 2}
   enemyHighlightPrefab: {fileID: 1423780048730516, guid: 00790ec116c51f341a618829f3092ff4,
+    type: 2}
+  cardHighlightPrefab: {fileID: 1227260438779844, guid: 240527753b0318b469f1aba4eb678f55,
     type: 2}
 --- !u!4 &1391145474 stripped
 Transform:
@@ -6026,7 +6057,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1604492366473964, guid: 71c933b81a5dc45059dfde1200a6aa57, type: 2}
       propertyPath: m_Name
-      value: Ent Card
+      value: Barghest Card
       objectReference: {fileID: 0}
     - target: {fileID: 114524700364848928, guid: 71c933b81a5dc45059dfde1200a6aa57,
         type: 2}
@@ -6041,7 +6072,7 @@ Prefab:
     - target: {fileID: 114302177247602078, guid: 71c933b81a5dc45059dfde1200a6aa57,
         type: 2}
       propertyPath: m_Text
-      value: High defence, mediocre attack
+      value: High mobility, mediocre attack
       objectReference: {fileID: 0}
     - target: {fileID: 114814653142789428, guid: 71c933b81a5dc45059dfde1200a6aa57,
         type: 2}
@@ -6057,12 +6088,12 @@ Prefab:
     - target: {fileID: 114844678082013760, guid: 71c933b81a5dc45059dfde1200a6aa57,
         type: 2}
       propertyPath: m_Text
-      value: Ent
+      value: Barghest
       objectReference: {fileID: 0}
     - target: {fileID: 224752854262345334, guid: 71c933b81a5dc45059dfde1200a6aa57,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: 15.3
+      value: 7.3
       objectReference: {fileID: 0}
     - target: {fileID: 1604492366473964, guid: 71c933b81a5dc45059dfde1200a6aa57, type: 2}
       propertyPath: m_Layer
@@ -6104,6 +6135,16 @@ Prefab:
         type: 2}
       propertyPath: m_BlocksRaycasts
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114892477498063370, guid: 71c933b81a5dc45059dfde1200a6aa57,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1381791552}
+    - target: {fileID: 114892477498063370, guid: 71c933b81a5dc45059dfde1200a6aa57,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: summonBarghest
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114076601577564908, guid: 71c933b81a5dc45059dfde1200a6aa57, type: 2}
@@ -8055,6 +8096,16 @@ Prefab:
     - target: {fileID: 1059277506388992, guid: 71c933b81a5dc45059dfde1200a6aa57, type: 2}
       propertyPath: m_Layer
       value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 114892477498063370, guid: 71c933b81a5dc45059dfde1200a6aa57,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1381791552}
+    - target: {fileID: 114892477498063370, guid: 71c933b81a5dc45059dfde1200a6aa57,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: summonLord
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114076601577564908, guid: 71c933b81a5dc45059dfde1200a6aa57, type: 2}

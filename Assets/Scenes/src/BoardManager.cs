@@ -40,6 +40,8 @@ public class BoardManager : MonoBehaviour
     //Has the player used a card yet?
     private bool canPlayCard = true;
 
+    private bool isUsingCard = false;
+
     //Board size, x * x. Only change this to modify the board size.
     public const int boardSize = 8;
 
@@ -89,7 +91,6 @@ public class BoardManager : MonoBehaviour
                 }
             }
         }
-
     }
 
     private void clearMoves()
@@ -132,7 +133,7 @@ public class BoardManager : MonoBehaviour
     private void moveCharacter(int x, int y)
     {
         //if the selected tile is an enemy, damage the enemy, if they are at 0 hp, remove the enemy
-        if (allowedMoves[x, y] == true && Characters[x, y] != null && Characters[selectedCharacter.currentX, selectedCharacter.currentY].isPlayer1 != Characters[x, y].isPlayer1)
+        if (Characters[selectedCharacter.currentX, selectedCharacter.currentY] != null && allowedMoves[x, y] == true && Characters[x, y] != null && Characters[selectedCharacter.currentX, selectedCharacter.currentY].isPlayer1 != Characters[x, y].isPlayer1)
         {
             Characters[selectedCharacter.currentX, selectedCharacter.currentY] = null;
 
@@ -193,7 +194,7 @@ public class BoardManager : MonoBehaviour
             }
         }
         //if the position you selected is a valid move, move the character
-        else if (allowedMoves[x, y] == true && Characters[x, y] == null)
+        else if (!isUsingCard && allowedMoves[x, y] == true && Characters[x, y] == null)
         {
             Characters[selectedCharacter.currentX, selectedCharacter.currentY] = null;
             selectedCharacter.transform.position = getTileCenter(x, y);
@@ -203,7 +204,6 @@ public class BoardManager : MonoBehaviour
         }
 
         BoardHighlighter.Instance.hideHighlights();
-
         //deselect the character
         selectedCharacter = null;
     }
@@ -314,8 +314,8 @@ public class BoardManager : MonoBehaviour
             GameObject.Find("Fireball Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
             GameObject.Find("Axe Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
 
-            GameObject.Find("Slime Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
-            GameObject.Find("Ent Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
+            GameObject.Find("Gnome Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
+            GameObject.Find("Barghest Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
             GameObject.Find("Witch Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
             GameObject.Find("Darkness Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
             GameObject.Find("Path Finding Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
@@ -328,8 +328,8 @@ public class BoardManager : MonoBehaviour
             GameObject.Find("Fireball Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
             GameObject.Find("Axe Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
 
-            GameObject.Find("Slime Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
-            GameObject.Find("Ent Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
+            GameObject.Find("Gnome Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
+            GameObject.Find("Barghest Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
             GameObject.Find("Witch Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
             GameObject.Find("Darkness Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
             GameObject.Find("Path Finding Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
@@ -341,68 +341,15 @@ public class BoardManager : MonoBehaviour
         hasAttacked = false;
     }
 
-    public void summonSlime()
-    {
-        if (canPlayCard == true)
-        {
-            Character leader = getLeader();
-            selectedCharacter = leader;
-            BoardHighlighter.Instance.highlightAllowedMoves(leader.possibleMove());
-            StartCoroutine(summonSlimeB());
-        }
-    }
-
-    private IEnumerator summonSlimeB()
-    {
-        while (!Input.GetMouseButtonDown(0))
-        {
-            yield return null;
-        }
-        if (isPlayer1Turn)
-        {
-            Character leader = getLeader();
-            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
-            {
-                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
-                {
-                    spawnCharacter(1, selectionX, selectionY);
-                    Characters[selectionX, selectionY].isPlayer1 = true;
-                    Characters[selectionX, selectionY].isLeader = false;
-                    canPlayCard = false;
-                }
-            }
-            BoardHighlighter.Instance.hideHighlights();
-            selectedCharacter = null;
-        }
-        else if (!isPlayer1Turn)
-        {
-            Character leader = getLeader();
-
-            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
-            {
-                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
-                {
-                    spawnCharacter(1, selectionX, selectionY);
-                    Characters[selectionX, selectionY].isPlayer1 = false;
-                    Characters[selectionX, selectionY].isLeader = false;
-                    Characters[selectionX, selectionY].transform.localRotation *= Quaternion.Euler(0, 180, 0);
-                    canPlayCard = false;
-                }
-            }
-            BoardHighlighter.Instance.hideHighlights();
-            selectedCharacter = null;
-        }
-        yield return new WaitForFixedUpdate();
-    }
-
     //wrapper funciton for summoning
     public void summonKnight()
     {
         if (canPlayCard == true)
         {
+            isUsingCard = true;
             Character leader = getLeader();
             selectedCharacter = leader;
-            BoardHighlighter.Instance.highlightAllowedMoves(leader.possibleMove());
+            BoardHighlighter.Instance.highlightCardPlacementArea(leader.possibleMove());
             StartCoroutine(summonKnightB());
         }
     }
@@ -416,7 +363,8 @@ public class BoardManager : MonoBehaviour
         {
             yield return null;
         }
-        if(isPlayer1Turn)
+        BoardHighlighter.Instance.hideHighlights();
+        if (isPlayer1Turn)
         {
             Character leader = getLeader();
             if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
@@ -429,7 +377,7 @@ public class BoardManager : MonoBehaviour
                     canPlayCard = false;
                 }  
             }
-            BoardHighlighter.Instance.hideHighlights();
+            isUsingCard = false;
             selectedCharacter = null;
         }
         else if(!isPlayer1Turn)
@@ -446,7 +394,287 @@ public class BoardManager : MonoBehaviour
                     canPlayCard = false;
                 }
             }
-            BoardHighlighter.Instance.hideHighlights();
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        yield return new WaitForFixedUpdate();
+    }
+
+    public void summonWitch()
+    {
+        if (canPlayCard == true)
+        {
+            isUsingCard = true;
+            Character leader = getLeader();
+            selectedCharacter = leader;
+            BoardHighlighter.Instance.highlightCardPlacementArea(leader.possibleMove());
+            StartCoroutine(summonWitchB());
+        }
+    }
+
+    private IEnumerator summonWitchB()
+    {
+        while (!Input.GetMouseButtonDown(0))
+        {
+            yield return null;
+        }
+        BoardHighlighter.Instance.hideHighlights();
+        if (isPlayer1Turn)
+        {
+            Character leader = getLeader();
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(2, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = true;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        else if (!isPlayer1Turn)
+        {
+            Character leader = getLeader();
+
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(2, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = false;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    Characters[selectionX, selectionY].transform.localRotation *= Quaternion.Euler(0, 180, 0);
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        yield return new WaitForFixedUpdate();
+    }
+
+    public void summonBarghest()
+    {
+        if (canPlayCard == true)
+        {
+            isUsingCard = true;
+            Character leader = getLeader();
+            selectedCharacter = leader;
+            BoardHighlighter.Instance.highlightCardPlacementArea(leader.possibleMove());
+            StartCoroutine(summonBarghestB());
+        }
+    }
+
+    private IEnumerator summonBarghestB()
+    {
+        while (!Input.GetMouseButtonDown(0))
+        {
+            yield return null;
+        }
+        BoardHighlighter.Instance.hideHighlights();
+        if (isPlayer1Turn)
+        {
+            Character leader = getLeader();
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(3, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = true;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        else if (!isPlayer1Turn)
+        {
+            Character leader = getLeader();
+
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(3, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = false;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    Characters[selectionX, selectionY].transform.localRotation *= Quaternion.Euler(0, 180, 0);
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        yield return new WaitForFixedUpdate();
+    }
+
+    public void summonGnome()
+    {
+        if (canPlayCard == true)
+        {
+            isUsingCard = true;
+            Character leader = getLeader();
+            selectedCharacter = leader;
+            BoardHighlighter.Instance.highlightCardPlacementArea(leader.possibleMove());
+            StartCoroutine(summonGnomeB());
+        }
+    }
+
+    private IEnumerator summonGnomeB()
+    {
+        while (!Input.GetMouseButtonDown(0))
+        {
+            yield return null;
+        }
+        BoardHighlighter.Instance.hideHighlights();
+        if (isPlayer1Turn)
+        {
+            Character leader = getLeader();
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(4, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = true;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        else if (!isPlayer1Turn)
+        {
+            Character leader = getLeader();
+
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(4, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = false;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    Characters[selectionX, selectionY].transform.localRotation *= Quaternion.Euler(0, 180, 0);
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        yield return new WaitForFixedUpdate();
+    }
+
+    public void summonFootSoldier()
+    {
+        if (canPlayCard == true)
+        {
+            isUsingCard = true;
+            Character leader = getLeader();
+            selectedCharacter = leader;
+            BoardHighlighter.Instance.highlightCardPlacementArea(leader.possibleMove());
+            StartCoroutine(summonFootSoldierB());
+        }
+    }
+
+    private IEnumerator summonFootSoldierB()
+    {
+        while (!Input.GetMouseButtonDown(0))
+        {
+            yield return null;
+        }
+        BoardHighlighter.Instance.hideHighlights();
+        if (isPlayer1Turn)
+        {
+            Character leader = getLeader();
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(5, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = true;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        else if (!isPlayer1Turn)
+        {
+            Character leader = getLeader();
+
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(5, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = false;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    Characters[selectionX, selectionY].transform.localRotation *= Quaternion.Euler(0, 180, 0);
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        yield return new WaitForFixedUpdate();
+    }
+
+    public void summonLord()
+    {
+        if (canPlayCard == true)
+        {
+            isUsingCard = true;
+            Character leader = getLeader();
+            selectedCharacter = leader;
+            BoardHighlighter.Instance.highlightCardPlacementArea(leader.possibleMove());
+            StartCoroutine(summonLordB());
+        }
+    }
+
+    private IEnumerator summonLordB()
+    {
+        while (!Input.GetMouseButtonDown(0))
+        {
+            yield return null;
+        }
+        BoardHighlighter.Instance.hideHighlights();
+        if (isPlayer1Turn)
+        {
+            Character leader = getLeader();
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(6, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = true;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
+            selectedCharacter = null;
+        }
+        else if (!isPlayer1Turn)
+        {
+            Character leader = getLeader();
+
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(6, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = false;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    Characters[selectionX, selectionY].transform.localRotation *= Quaternion.Euler(0, 180, 0);
+                    canPlayCard = false;
+                }
+            }
+            isUsingCard = false;
             selectedCharacter = null;
         }
         yield return new WaitForFixedUpdate();

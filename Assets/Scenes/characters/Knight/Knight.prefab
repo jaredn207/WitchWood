@@ -355,7 +355,6 @@ GameObject:
   - component: {fileID: 4802177274826640}
   - component: {fileID: 95898090131902986}
   - component: {fileID: 143235443729827664}
-  - component: {fileID: 114604225650202300}
   - component: {fileID: 114484421423358846}
   m_Layer: 0
   m_Name: Knight
@@ -2881,19 +2880,6 @@ MonoBehaviour:
   hp: 10
   health_bar: {fileID: 1978438735341530}
   moveDistance: 2
---- !u!114 &114604225650202300
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1236825674881826}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0c12a414faf9994fb1cbc65900591d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 20
-  direction: {x: 0, y: 1, z: 0}
 --- !u!114 &114889135308968456
 MonoBehaviour:
   m_ObjectHideFlags: 1

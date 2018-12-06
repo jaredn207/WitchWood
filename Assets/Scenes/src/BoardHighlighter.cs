@@ -8,6 +8,7 @@ public class BoardHighlighter : MonoBehaviour
 
     public GameObject highlightPrefab;
     public GameObject enemyHighlightPrefab;
+    public GameObject cardHighlightPrefab;
 
     private List<GameObject> highlights;
     internal object selectedCharacter;
@@ -44,6 +45,19 @@ public class BoardHighlighter : MonoBehaviour
         return go;
     }
 
+    private GameObject getCardHighlightObject()
+    {
+        GameObject go = null;
+
+        if (go == null)
+        {
+            go = Instantiate(cardHighlightPrefab);
+            highlights.Add(go);
+        }
+
+        return go;
+    }
+
     public void highlightAllowedMoves(bool[,] moves)
     {
         for (int i = 0; i<BoardManager.boardSize; i++)
@@ -59,7 +73,7 @@ public class BoardHighlighter : MonoBehaviour
                     {
                         go = getEnemyHighlightObject();
                         go.SetActive(true);
-                        go.transform.position = new Vector3(i + 0.5f, .1f, j + 0.5f);
+                        go.transform.position = new Vector3(i + 0.5f, .01f, j + 0.5f);
                     }
                     //if the tile is an ally, don't highlight it
                     else if (BoardManager.Characters[i, j] != null && BoardManager.Characters[i, j].isPlayer1 == BoardManager.selectedCharacter.isPlayer1) { }
@@ -68,7 +82,33 @@ public class BoardHighlighter : MonoBehaviour
                     {
                         go = getHighlightObject();
                         go.SetActive(true);
-                        go.transform.position = new Vector3(i + 0.5f, .1f, j + 0.5f);
+                        go.transform.position = new Vector3(i + 0.5f, .01f, j + 0.5f);
+                    }
+                }
+            }
+        }
+    }
+
+    public void highlightCardPlacementArea(bool[,] moves)
+    {
+        for (int i = 0; i < BoardManager.boardSize; i++)
+        {
+            for (int j = 0; j < BoardManager.boardSize; j++)
+            {
+                if (moves[i, j] == true)
+                {
+                    GameObject go;
+
+                    //if the tile is an enemy, don't highlight it
+                    if (BoardManager.Characters[i, j] != null && BoardManager.Characters[i, j].isPlayer1 != BoardManager.selectedCharacter.isPlayer1){}
+                    //if the tile is an ally, don't highlight it
+                    else if (BoardManager.Characters[i, j] != null && BoardManager.Characters[i, j].isPlayer1 == BoardManager.selectedCharacter.isPlayer1) { }
+                    //if the tile is empty, highlight it green
+                    else
+                    {
+                        go = getCardHighlightObject();
+                        go.SetActive(true);
+                        go.transform.position = new Vector3(i + 0.5f, .01f, j + 0.5f);
                     }
                 }
             }
