@@ -345,6 +345,9 @@ public class BoardManager : MonoBehaviour
     {
         if (canPlayCard == true)
         {
+            Character leader = getLeader();
+            selectedCharacter = leader;
+            BoardHighlighter.Instance.highlightAllowedMoves(leader.possibleMove());
             StartCoroutine(summonSlimeB());
         }
     }
@@ -368,11 +371,13 @@ public class BoardManager : MonoBehaviour
                     canPlayCard = false;
                 }
             }
-
+            BoardHighlighter.Instance.hideHighlights();
+            selectedCharacter = null;
         }
         else if (!isPlayer1Turn)
         {
             Character leader = getLeader();
+
             if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
             {
                 if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
@@ -384,7 +389,8 @@ public class BoardManager : MonoBehaviour
                     canPlayCard = false;
                 }
             }
-
+            BoardHighlighter.Instance.hideHighlights();
+            selectedCharacter = null;
         }
         yield return new WaitForFixedUpdate();
     }
@@ -394,6 +400,9 @@ public class BoardManager : MonoBehaviour
     {
         if (canPlayCard == true)
         {
+            Character leader = getLeader();
+            selectedCharacter = leader;
+            BoardHighlighter.Instance.highlightAllowedMoves(leader.possibleMove());
             StartCoroutine(summonKnightB());
         }
     }
@@ -410,7 +419,7 @@ public class BoardManager : MonoBehaviour
         if(isPlayer1Turn)
         {
             Character leader = getLeader();
-            if(findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
             {
                 if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
                 {
@@ -420,12 +429,13 @@ public class BoardManager : MonoBehaviour
                     canPlayCard = false;
                 }  
             }
-                
+            BoardHighlighter.Instance.hideHighlights();
+            selectedCharacter = null;
         }
         else if(!isPlayer1Turn)
         {
             Character leader = getLeader();
-            if(findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
             {
                 if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
                 {
@@ -436,7 +446,8 @@ public class BoardManager : MonoBehaviour
                     canPlayCard = false;
                 }
             }
-            
+            BoardHighlighter.Instance.hideHighlights();
+            selectedCharacter = null;
         }
         yield return new WaitForFixedUpdate();
     }

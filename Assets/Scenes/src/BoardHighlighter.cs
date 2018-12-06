@@ -59,7 +59,7 @@ public class BoardHighlighter : MonoBehaviour
                     {
                         go = getEnemyHighlightObject();
                         go.SetActive(true);
-                        go.transform.position = new Vector3(i + 0.5f, 0, j + 0.5f);
+                        go.transform.position = new Vector3(i + 0.5f, .1f, j + 0.5f);
                     }
                     //if the tile is an ally, don't highlight it
                     else if (BoardManager.Characters[i, j] != null && BoardManager.Characters[i, j].isPlayer1 == BoardManager.selectedCharacter.isPlayer1) { }
@@ -68,7 +68,7 @@ public class BoardHighlighter : MonoBehaviour
                     {
                         go = getHighlightObject();
                         go.SetActive(true);
-                        go.transform.position = new Vector3(i + 0.5f, 0, j + 0.5f);
+                        go.transform.position = new Vector3(i + 0.5f, .1f, j + 0.5f);
                     }
                 }
             }
