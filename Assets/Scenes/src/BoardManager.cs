@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class BoardManager : MonoBehaviour
 {
@@ -44,6 +45,8 @@ public class BoardManager : MonoBehaviour
 
     //Board size, x * x. Only change this to modify the board size.
     public const int boardSize = 8;
+
+    public Text GameOver1, GameOver2;
 
     //Instantiate the activeCharacters list, set the Characters array to the entire board so that something can be selected at any position.
     //spawn the knight at (0,0) on the board
@@ -188,7 +191,16 @@ public class BoardManager : MonoBehaviour
                 Characters[x, y].takeDamage(selectedCharacter.attack);
                 if (Characters[x, y].hp <= 0)
                 {
-                    Characters[x, y].die();
+                    if (Characters[x, y].isLeader && Characters[x, y].isPlayer1)
+                    {
+                        GameOver1.text = "Player 2 Wins!";
+                        GameOver2.text = "Player 2 Wins!";
+                    }
+                    else if (Characters[x, y].isLeader && !Characters[x, y].isPlayer1)
+                    {
+                        GameOver1.text = "Player 1 Wins!";
+                        GameOver2.text = "Player 1 Wins!";
+                    }        
                 }
                 selectedCharacter.hasMoved = true;
             }
@@ -708,7 +720,12 @@ public class BoardManager : MonoBehaviour
             {
                 if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == false)
                 {
-                    Characters[selectionX, selectionY].takeDamage(10);
+                    if (Characters[selectionX, selectionY].isLeader && Characters[selectionX, selectionY].hp <= 2)
+                    {
+                        GameOver1.text = "Player 1 Wins!";
+                        GameOver2.text = "Player 1 Wins!";
+                    }
+                    Characters[selectionX, selectionY].takeDamage(2);
                     canPlayCard = false;
                 }
             }
@@ -723,7 +740,12 @@ public class BoardManager : MonoBehaviour
             {
                 if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX,selectionY].isPlayer1 == true)
                 {
-                    Characters[selectionX, selectionY].takeDamage(10);
+                    if (Characters[selectionX, selectionY].isLeader && Characters[selectionX, selectionY].hp <= 2)
+                    {
+                        GameOver1.text = "Player 2 Wins!";
+                        GameOver2.text = "Player 2 Wins!";
+                    }
+                    Characters[selectionX, selectionY].takeDamage(2);
                     canPlayCard = false;
                 }
             }
@@ -759,7 +781,7 @@ public class BoardManager : MonoBehaviour
             {
                 if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == true && !Characters[selectionX, selectionY].isBuffed)
                 {
-                    Characters[selectionX, selectionY].attack += 6;
+                    Characters[selectionX, selectionY].attack += 2;
                     Characters[selectionX, selectionY].isBuffed = true;
                     canPlayCard = false;
                 }
@@ -775,7 +797,7 @@ public class BoardManager : MonoBehaviour
             {
                 if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == false && !Characters[selectionX, selectionY].isBuffed)
                 {
-                    Characters[selectionX, selectionY].attack += 6;
+                    Characters[selectionX, selectionY].attack += 2;
                     Characters[selectionX, selectionY].isBuffed = true;
                     canPlayCard = false;
                 }
@@ -812,7 +834,12 @@ public class BoardManager : MonoBehaviour
             {
                 if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == false)
                 {
-                    Characters[selectionX, selectionY].takeDamage(1);
+                    if (Characters[selectionX, selectionY].isLeader && Characters[selectionX, selectionY].hp <= 2)
+                    {
+                        GameOver1.text = "Player 1 Wins!";
+                        GameOver2.text = "Player 1 Wins!";
+                    }
+                    Characters[selectionX, selectionY].takeDamage(2);
                     if (Characters[selectionX, selectionY].attack > 2)
                         Characters[selectionX, selectionY].attack -= 2;
                     canPlayCard = false;
@@ -829,7 +856,12 @@ public class BoardManager : MonoBehaviour
             {
                 if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == true)
                 {
-                    Characters[selectionX, selectionY].takeDamage(1);
+                    if (Characters[selectionX, selectionY].isLeader && Characters[selectionX, selectionY].hp <= 2)
+                    {
+                        GameOver1.text = "Player 2 Wins!";
+                        GameOver2.text = "Player 2 Wins!";
+                    }
+                    Characters[selectionX, selectionY].takeDamage(2);
                     if (Characters[selectionX, selectionY].attack > 2)
                         Characters[selectionX, selectionY].attack -= 2;
                     canPlayCard = false;
@@ -867,8 +899,8 @@ public class BoardManager : MonoBehaviour
             {
                 if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == true)
                 {
-                    //Characters[selectionX, selectionY].hasMoved = false;
-                    //Characters[selectionX, selectionY].hasAttacked = false;
+                    Characters[selectionX, selectionY].hasMoved = false;
+                    Characters[selectionX, selectionY].hasAttacked = false;
                     canPlayCard = false;
                 }
             }
@@ -883,8 +915,8 @@ public class BoardManager : MonoBehaviour
             {
                 if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] != null && Characters[selectionX, selectionY].isPlayer1 == false)
                 {
-                    //Characters[selectionX, selectionY].hasMoved = false;
-                    //Characters[selectionX, selectionY].hasAttacked = false;
+                    Characters[selectionX, selectionY].hasMoved = false;
+                    Characters[selectionX, selectionY].hasAttacked = false;
                     canPlayCard = false;
                 }
             }

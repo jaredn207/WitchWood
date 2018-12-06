@@ -1951,10 +1951,12 @@ MonoBehaviour:
   isPlayer1: 0
   hasMoved: 0
   hasAttacked: 0
+  isBuffed: 0
   isLeader: 0
-  max_health: 10
-  hp: 10
+  max_health: 20
+  hp: 20
   health_bar: {fileID: 1181010032129604}
+  attack: 2
   moveDistance: 3
 --- !u!137 &137369033124505326
 SkinnedMeshRenderer:
