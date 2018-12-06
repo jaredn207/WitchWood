@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Player 1
+  - Player 2
   layers:
   - Default
   - TransparentFX
@@ -16,8 +18,8 @@ TagManager:
   - BoardPlane
   - Player 2 Trees
   - Player 1 Trees
-  - 
-  - 
+  - Player 1 UI
+  - Player 2 UI
   - 
   - 
   - 

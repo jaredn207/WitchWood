@@ -55,8 +55,8 @@ public class BoardManager : MonoBehaviour
         Characters[0, 0].isPlayer1 = true;
         Characters[0, 0].isLeader = true;
 
-        //knight player 2
-        spawnCharacter(0, 7, 7);
+        //archer player 2
+        spawnCharacter(1, 7, 7);
         Characters[7, 7].isPlayer1 = false;
         Characters[7, 7].transform.localRotation *= Quaternion.Euler(0, 180, 0);
         Characters[7, 7].isLeader = true;
@@ -303,25 +303,105 @@ public class BoardManager : MonoBehaviour
             }
         }
         canPlayCard = true;
+
+        //Turns off blocksRayCasts for one player's set of cards
+        //If not done, then both sets of cards will do the same thing
+        if(isPlayer1Turn)
+        {
+            GameObject.Find("Knight Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
+            GameObject.Find("Footman Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
+            GameObject.Find("Lord Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
+            GameObject.Find("Fireball Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
+            GameObject.Find("Axe Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
+
+            GameObject.Find("Slime Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
+            GameObject.Find("Ent Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
+            GameObject.Find("Witch Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
+            GameObject.Find("Darkness Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
+            GameObject.Find("Path Finding Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
+        }
+        else
+        {
+            GameObject.Find("Knight Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
+            GameObject.Find("Footman Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
+            GameObject.Find("Lord Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
+            GameObject.Find("Fireball Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
+            GameObject.Find("Axe Card").GetComponent<CanvasGroup>().blocksRaycasts = false;
+
+            GameObject.Find("Slime Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
+            GameObject.Find("Ent Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
+            GameObject.Find("Witch Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
+            GameObject.Find("Darkness Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
+            GameObject.Find("Path Finding Card").GetComponent<CanvasGroup>().blocksRaycasts = true;
+        }
+
         player1Camera.enabled = !player1Camera.enabled;
         player2Camera.enabled = !player2Camera.enabled;
 
         hasAttacked = false;
     }
 
-    //wrapper funciton for summoning
-    public void summon()
+    public void summonSlime()
     {
         if (canPlayCard == true)
         {
-            StartCoroutine(summonKnight());
+            StartCoroutine(summonSlimeB());
+        }
+    }
+
+    private IEnumerator summonSlimeB()
+    {
+        while (!Input.GetMouseButtonDown(0))
+        {
+            yield return null;
+        }
+        if (isPlayer1Turn)
+        {
+            Character leader = getLeader();
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(1, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = true;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    canPlayCard = false;
+                }
+            }
+
+        }
+        else if (!isPlayer1Turn)
+        {
+            Character leader = getLeader();
+            if (findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
+            {
+                if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
+                {
+                    spawnCharacter(1, selectionX, selectionY);
+                    Characters[selectionX, selectionY].isPlayer1 = false;
+                    Characters[selectionX, selectionY].isLeader = false;
+                    Characters[selectionX, selectionY].transform.localRotation *= Quaternion.Euler(0, 180, 0);
+                    canPlayCard = false;
+                }
+            }
+
+        }
+        yield return new WaitForFixedUpdate();
+    }
+
+    //wrapper funciton for summoning
+    public void summonKnight()
+    {
+        if (canPlayCard == true)
+        {
+            StartCoroutine(summonKnightB());
         }
     }
 
     //function for summoning, meant to be attached to a button.
     //When you click a button this function is attached to, it will wait for another click.
     //if the tile you click is out of range of the leader, the summon won't take effect.
-    private IEnumerator summonKnight()
+    private IEnumerator summonKnightB()
     {
         while (!Input.GetMouseButtonDown(0))
         {
@@ -330,7 +410,6 @@ public class BoardManager : MonoBehaviour
         if(isPlayer1Turn)
         {
             Character leader = getLeader();
-            Debug.Log(leader.isPlayer1);
             if(findDistance(leader.currentX, leader.currentY, selectionX, selectionY) <= leader.moveDistance)
             {
                 if (selectionX != -1 && selectionY != -1 && Characters[selectionX, selectionY] == null)
